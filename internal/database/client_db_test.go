@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com.br/devfullcycle/fc-ms-wallet/internal/entity"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -33,4 +35,25 @@ func TestClientDbTestSuite(t *testing.T) {
 		Quando esse cara rodar, ele executara todas as "funções"
 		que estão incubidas na nossa suite de DB
 	*/
+}
+
+func (s *ClientDBTestSuit) TestSave() {
+	client := &entity.Client{
+		ID:    "1",
+		Name:  "John",
+		Email: "abc@abcd.com",
+	}
+	err := s.clientDB.Save(client)
+	s.Nil(err)
+}
+
+func (s *ClientDBTestSuit) TestGet() {
+	client, _ := entity.NewClient("John Doe", "j@j.com")
+	s.clientDB.Save(client)
+
+	clientDb, err := s.clientDB.Get(client.ID)
+	s.Nil(err)
+	s.Equal(client.ID, clientDb.ID)
+	s.Equal(client.Name, clientDb.Name)
+	s.Equal(client.Email, clientDb.Email)
 }
