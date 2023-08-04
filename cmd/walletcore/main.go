@@ -10,13 +10,13 @@ import (
 	createclient "github.com.br/devfullcycle/fc-ms-wallet/internal/usecase/create_client"
 	createtransaction "github.com.br/devfullcycle/fc-ms-wallet/internal/usecase/create_transaction"
 	"github.com.br/devfullcycle/fc-ms-wallet/internal/web"
-	webserver "github.com.br/devfullcycle/fc-ms-wallet/internal/web/web_server"
+	"github.com.br/devfullcycle/fc-ms-wallet/internal/web/web_server"
 	"github.com.br/devfullcycle/fc-ms-wallet/pkg/events"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", "root", "root", "mysql", "3306", "wallet"))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", "root", "root", "mysql", "3307", "wallet"))
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ func main() {
 	//Criando as rotas
 	webServer.AddHandler("/clients", clientHandler.CreateClient)
 	webServer.AddHandler("/accounts", accountHandler.CreateAccount)
-	webServer.AddHandler("/transaction", transactionHandler.CreateTransaction)
+	webServer.AddHandler("/transactions", transactionHandler.CreateTransaction)
 
 	//startando o server
 	webServer.Start()
