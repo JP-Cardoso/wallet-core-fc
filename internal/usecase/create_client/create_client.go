@@ -1,4 +1,4 @@
-package createclient
+package create_client
 
 import (
 	"time"
@@ -8,8 +8,8 @@ import (
 )
 
 type CreateClientInputDto struct {
-	Name  string
-	Email string
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type CreateClientOutputDto struct {
@@ -31,20 +31,23 @@ func NewCreateClientUseCase(clientGateway gateway.ClientGateway) *CreateClientUs
 }
 
 func (uc *CreateClientUseCase) Execute(input CreateClientInputDto) (*CreateClientOutputDto, error) {
+
 	client, err := entity.NewClient(input.Name, input.Email)
 	if err != nil {
 		return nil, err
 	}
+
 	err = uc.ClientGateway.Save(client)
 	if err != nil {
 		return nil, err
 	}
 
-	return &CreateClientOutputDto{
+	output := &CreateClientOutputDto{
 		ID:        client.ID,
 		Name:      client.Name,
 		Email:     client.Email,
 		CreatedAt: client.CreatedAt,
 		UpdatedAt: client.UpdetedAt,
-	}, nil
+	}
+	return output, nil
 }

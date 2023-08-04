@@ -4,40 +4,41 @@ import (
 	"encoding/json"
 	"net/http"
 
-	createclient "github.com.br/devfullcycle/fc-ms-wallet/internal/usecase/create_client"
+	"github.com.br/devfullcycle/fc-ms-wallet/internal/usecase/create_client"
 )
 
 type WebClientHandler struct {
-	CreateClientUseCase createclient.CreateClientUseCase
+    CreateClientUseCase create_client.CreateClientUseCase
 }
 
-// "Método construtor"
-func NewWebClientHandler(createClienUseCase createclient.CreateClientUseCase) *WebClientHandler {
-	return &WebClientHandler{
-		CreateClientUseCase: createClienUseCase,
-	}
+func NewWebClientHandler(createClientUseCase create_client.CreateClientUseCase) *WebClientHandler {
+    return &WebClientHandler{
+        CreateClientUseCase: createClientUseCase,
+    }
 }
 
-func (web *WebClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
-	var dto createclient.CreateClientInputDto   //setando a váriavel para esse tipo
-	err := json.NewDecoder(r.Body).Decode(&dto) //pegando os dados que vieram do request, e parseando eles para o var dto
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+func (h *WebClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
+    var dto create_client.CreateClientInputDto
+    err := json.NewDecoder(r.Body).Decode(&dto)
+    if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
 
-	output, err := web.CreateClientUseCase.Execute(dto)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+    output, err := h.CreateClientUseCase.Execute(dto)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 
-	w.Header().Set("Content-Type", "application/json")//Setando o tipo de resposta no cabeçalho
-	err = json.NewEncoder(w).Encode(output) //Codifuca o output em JSON para enviar como retorno
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	// w.Write([]byte())
-	w.WriteHeader(http.StatusCreated)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    err = json.NewEncoder(w).Encode(output)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusCreated)
 }
