@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	createtransaction "github.com.br/devfullcycle/fc-ms-wallet/internal/usecase/create_transaction"
@@ -27,8 +28,8 @@ func (web *WebTransactionHandler) CreateTransaction(w http.ResponseWriter, r *ht
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 	output, err := web.CreateTransactionUseCase.Execute(dto)
+	fmt.Println("Deu erro", err)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

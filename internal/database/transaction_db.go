@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-
 	"github.com.br/devfullcycle/fc-ms-wallet/internal/entity"
 )
 
