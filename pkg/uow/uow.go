@@ -10,7 +10,7 @@ import (
 type RepositoryFactory func(tx *sql.Tx) interface{}
 
 type UowInterface interface {
-	Register(name string, fc RepositoryFactory)
+	Register(name string, fc RepositoryFactory) //Registramos os repositorios que queremos trabalhar
 	GetRepository(ctx context.Context, name string) (interface{}, error)
 	Do(ctx context.Context, fn func(uow *Uow) error) error
 	CommitOrRollback() error
