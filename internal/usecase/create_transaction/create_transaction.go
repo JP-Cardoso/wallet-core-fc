@@ -2,6 +2,8 @@ package createtransaction
 
 import (
 	"context"
+	"fmt"
+
 	"github.com.br/devfullcycle/fc-ms-wallet/internal/entity"
 	"github.com.br/devfullcycle/fc-ms-wallet/internal/gateway"
 	"github.com.br/devfullcycle/fc-ms-wallet/pkg/events"
@@ -45,15 +47,17 @@ func (uc *CreateTransactionUseCase) Execute(ctx context.Context, input CreateTra
 	err := uc.Uow.Do(ctx, func(_ *uow.Uow) error {
 		accountRepository := uc.getAccountRepository(ctx)
 		transactionRepository := uc.getTransactionRepository(ctx)
-
+		fmt.Print(input.AccountIDTo, "Eu o input")
 		accountFrom, err := accountRepository.FindById(input.AccountIDFrom)
 		if err != nil {
 			return err
 		}
+		fmt.Println(accountFrom, "accountFrom")
 		accountTo, err := accountRepository.FindById(input.AccountIDTo)
 		if err != nil {
 			return err
 		}
+		fmt.Println(err, "accountTo")
 		transaction, err := entity.NewTransaction(accountFrom, accountTo, input.Amount)
 		if err != nil {
 			return err
