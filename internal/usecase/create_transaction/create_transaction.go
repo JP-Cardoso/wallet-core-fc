@@ -78,6 +78,8 @@ func (uc *CreateTransactionUseCase) Execute(ctx context.Context, input CreateTra
 		output.AccountIDFrom = input.AccountIDFrom
 		output.AccountIDTo = input.AccountIDTo
 		output.Amount = input.Amount
+
+		
 		return nil
 	})
 	if err != nil {

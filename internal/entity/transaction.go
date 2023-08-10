@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	
 	"time"
 
 	"github.com/google/uuid"
@@ -28,6 +29,7 @@ func NewTransaction(accountFrom *Account, accountTo *Account, amount float64) (*
 		return nil, err
 	}
 	transaction.Commit()
+
 	return transaction, nil
 }
 
