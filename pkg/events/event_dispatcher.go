@@ -1,6 +1,9 @@
 package events
 
-import "errors"
+import (
+	"errors"
+	"sync"
+)
 
 var ErrHandlerAlreadyRegistered = errors.New("handler already registerded")
 
@@ -14,22 +17,27 @@ func NewEventDispatcher() *EventDispatcher {
 	}
 }
 
-func (ed *EventDispatcher) Register(eventName string, handler EventHandlerInterface) error {
+func (ev *EventDispatcher) Dispatch(event EventInterface) error {
+	if handlers, ok := ev.handlers[event.GetName()]; ok {
+		wg := &sync.WaitGroup{}
+		for _, handler := range handlers {
+			wg.Add(1)
+			go handler.Handle(event, wg)
+		}
+		wg.Wait()
+	}
+	return nil
+}
 
-	if _, ok := ed.handlers[eventName]; ok { //Retorna se existe um evento no map com esse nome e o ok = true
-		for _, h := range ed.handlers[eventName] { //Percorre todos os eventos e verifica no if se há algum evento igual
+func (ed *EventDispatcher) Register(eventName string, handler EventHandlerInterface) error {
+	if _, ok := ed.handlers[eventName]; ok {
+		for _, h := range ed.handlers[eventName] {
 			if h == handler {
 				return ErrHandlerAlreadyRegistered
 			}
 		}
 	}
-
 	ed.handlers[eventName] = append(ed.handlers[eventName], handler)
-	return nil
-}
-
-func (ed *EventDispatcher) Clear() error {
-	ed.handlers = make(map[string][]EventHandlerInterface)
 	return nil
 }
 
@@ -44,18 +52,6 @@ func (ed *EventDispatcher) Has(eventName string, handler EventHandlerInterface) 
 	return false
 }
 
-func (ed *EventDispatcher) Dispatch(event EventInterface) error {
-	if handlers, ok := ed.handlers[event.GetName()]; ok {
-		for _, handler := range handlers {
-			go handler.Handle(event) 
-		}
-	}
-	return nil
-	/*
-		Percorre todos os hnadlers de um evento registrado, e o executa handler por handler
-	*/
-}
-
 func (ed *EventDispatcher) Remove(eventName string, handler EventHandlerInterface) error {
 	if _, ok := ed.handlers[eventName]; ok {
 		for i, h := range ed.handlers[eventName] {
@@ -66,4 +62,8 @@ func (ed *EventDispatcher) Remove(eventName string, handler EventHandlerInterfac
 		}
 	}
 	return nil
+}
+
+func (ed *EventDispatcher) Clear() {
+	ed.handlers = make(map[string][]EventHandlerInterface)
 }
